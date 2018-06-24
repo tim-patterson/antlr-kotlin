@@ -21,7 +21,6 @@ repositories {
 }
 
 dependencies {
-    compile "com.strumenta.antlr-kotlin:antlr-kotlin-runtime-common:0.0.1"
     compile "com.strumenta.antlr-kotlin:antlr-kotlin-runtime-jvm:0.0.1"
     compile "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"

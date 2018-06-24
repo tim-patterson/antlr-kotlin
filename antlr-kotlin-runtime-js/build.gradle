@@ -55,7 +55,6 @@ version = '0.0.1'
 
 dependencies {
     expectedBy project(':antlr-kotlin-runtime-common')
-    compile "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-js:$kotlin_version"
 }

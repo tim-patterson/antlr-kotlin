@@ -26,7 +26,7 @@ repositories {
 dependencies {
     compileOnly gradleApi()
     compileOnly "org.antlr:antlr4:4.7.1@jar"
-    compileOnly "com.strumenta.antlr-kotlin:antlr-kotlin-target:0.0.1@jar"
+    compile project(":antlr-kotlin-target")
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 //    testCompileOnly gradleTestKit()
 //    testImplementation 'junit:junit:4.12'
