@@ -545,7 +545,7 @@ abstract class Parser(protected var _input: TokenStream?) : Recognizer<Token, Pa
         charPositionInLine = offendingToken.charPositionInLine
 
         val listener = errorListenerDispatch
-        listener.syntaxError(this, offendingToken, line, charPositionInLine, msg, e!!)
+        listener.syntaxError(this, offendingToken, line, charPositionInLine, msg, e)
     }
 
     //
