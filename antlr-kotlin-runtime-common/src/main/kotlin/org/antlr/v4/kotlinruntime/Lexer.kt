@@ -19,30 +19,20 @@ import org.antlr.v4.kotlinruntime.misc.Pair
  */
 abstract class Lexer : Recognizer<Int, LexerATNSimulator>, TokenSource {
 
+    private var _input: CharStream? = null
 
-//    /** Set the char stream and reset the lexer  */
-//    fun setInputStream(input: IntStream) {
-//        this.inputStream = null
-//        this._tokenFactorySourcePair = Pair<TokenSource, CharStream>(this, inputStream)
-//        reset()
-//        this.inputStream = input as CharStream
-//        this._tokenFactorySourcePair = Pair<TokenSource, CharStream>(this, readInputStream())
-//    }
+    override val charInputStream: CharStream?
+        get() = _input
 
-    override fun assignInputStream(newValue: IntStream?) {
-        assignInputStream(newValue as CharStream?)
-    }
-
-    fun assignInputStream(input: CharStream?) {
-        this.inputStream = null
-        this._tokenFactorySourcePair = Pair<TokenSource, CharStream>(this, inputStream)
-        reset()
-        this.inputStream = input as CharStream
-        this._tokenFactorySourcePair = Pair<TokenSource, CharStream>(this, readInputStream())
-    }
-    override fun readInputStream() : CharStream? {
-        return this.inputStream as CharStream?
-    }
+    override var inputStream: IntStream?
+        get() = _input
+        set(value) {
+            _input = null
+            _tokenFactorySourcePair = Pair(this, _input)
+            reset()
+            _input = value as CharStream
+            _tokenFactorySourcePair = Pair(this, _input)
+        }
 
 
     protected var _tokenFactorySourcePair: Pair<TokenSource, CharStream>? = null
@@ -120,7 +110,7 @@ abstract class Lexer : Recognizer<Int, LexerATNSimulator>, TokenSource {
     var text: String
         get() = if (_text != null) {
             _text!!
-        } else interpreter!!.getText(readInputStream()!!)
+        } else interpreter!!.getText(charInputStream!!)
         set(text) {
             this._text = text
         }
@@ -156,8 +146,8 @@ abstract class Lexer : Recognizer<Int, LexerATNSimulator>, TokenSource {
     constructor() {}
 
     constructor(input: CharStream) {
-        this.inputStream = input
-        this._tokenFactorySourcePair = Pair<TokenSource, CharStream>(this, input)
+        this._input = input
+        this._tokenFactorySourcePair = Pair(this, input)
     }
 
     fun reset() {
@@ -211,7 +201,7 @@ abstract class Lexer : Recognizer<Int, LexerATNSimulator>, TokenSource {
 //                    								   " at index "+ inputStream!!.index())
                     var ttype: Int
                     try {
-                        ttype = interpreter!!.match(readInputStream()!!, _mode)
+                        ttype = interpreter!!.match(charInputStream!!, _mode)
                     } catch (e: LexerNoViableAltException) {
                         notifyListeners(e)        // report error
                         recover(e)
@@ -305,12 +295,12 @@ abstract class Lexer : Recognizer<Int, LexerATNSimulator>, TokenSource {
     fun recover(e: LexerNoViableAltException) {
         if (inputStream!!.LA(1) != IntStream.EOF) {
             // skip a char and try again
-            interpreter!!.consume(readInputStream()!!)
+            interpreter!!.consume(charInputStream!!)
         }
     }
 
     fun notifyListeners(e: LexerNoViableAltException) {
-        val text = readInputStream()!!.getText(Interval.of(_tokenStartCharIndex, inputStream!!.index()))
+        val text = charInputStream!!.getText(Interval.of(_tokenStartCharIndex, inputStream!!.index()))
         val msg = "token recognition error at: '" + getErrorDisplay(text) + "'"
 
         val listener = errorListenerDispatch

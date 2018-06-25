@@ -129,17 +129,17 @@ constructor(
             return 1
         }
 
-
-    override fun readInputStream(): CharStream? {
-        if (i < tokens!!.size) {
-            return tokens!!.get(i).inputStream
-        } else if (eofToken != null) {
-            return eofToken!!.inputStream
-        } else if (tokens.size > 0) {
-            return tokens.get(tokens.size - 1).inputStream
+    override val charInputStream: CharStream?
+        get() {
+            if (i < tokens!!.size) {
+                return tokens!!.get(i).inputStream
+            } else if (eofToken != null) {
+                return eofToken!!.inputStream
+            } else if (tokens.size > 0) {
+                return tokens.get(tokens.size - 1).inputStream
+            }
+            return null
         }
-        return null
-    }
 
     init {
         if (tokens == null) {
@@ -162,7 +162,7 @@ constructor(
                 }
 
                 val stop = Math.max(-1, start - 1)
-                eofToken = tokenFactory.create(Pair<TokenSource, CharStream>(this, readInputStream()), Token.EOF, "EOF", Token.DEFAULT_CHANNEL, start, stop, line, charPositionInLine)
+                eofToken = tokenFactory.create(Pair(this, charInputStream), Token.EOF, "EOF", Token.DEFAULT_CHANNEL, start, stop, line, charPositionInLine)
             }
 
             return eofToken!!

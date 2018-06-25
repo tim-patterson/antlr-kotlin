@@ -14,15 +14,7 @@ import org.antlr.v4.kotlinruntime.tree.*
 
 //
 ///** This is all the parsing support code essentially; most of it is error recovery stuff.  */
-abstract class Parser(input: TokenStream) : Recognizer<Token, ParserATNSimulator>() {
-
-    override fun assignInputStream(newValue: IntStream?) {
-        this.inputStream = newValue
-    }
-
-    override fun readInputStream(): IntStream? {
-        return this.inputStream
-    }
+abstract class Parser(protected var _input: TokenStream?) : Recognizer<Token, ParserATNSimulator>() {
 
     /**
      * The error handling strategy for the parser. The default value is a new
@@ -34,15 +26,12 @@ abstract class Parser(input: TokenStream) : Recognizer<Token, ParserATNSimulator
      */
 
     var errorHandler: ANTLRErrorStrategy = DefaultErrorStrategy()
-    //
-//    /**
-//     * The input stream.
-//     *
-//     * @see .getInputStream
-//     *
-//     * @see .setInputStream
-//     */
-    protected var _input: TokenStream? = input
+
+
+
+    override var inputStream: IntStream?
+        get() = _input
+        set(value) { _input = value as TokenStream? }
     //
     protected val _precedenceStack: IntegerStack = IntegerStack()
     //
@@ -326,25 +315,21 @@ abstract class Parser(input: TokenStream) : Recognizer<Token, ParserATNSimulator
 //        _precedenceStack.push(0)
 //    }
 //
-    init {
-        assignInputStream(input)
-    }
 //
     /** reset the parser's state  */
     open fun reset() {
-        TODO()
-//        if (inputStream != null) inputStream!!.seek(0)
-//        errorHandler.reset(this)
-//        context = null
-//        numberOfSyntaxErrors = 0
-//        isMatchedEOF = false
-//        isTrace = false
-//        _precedenceStack.clear()
-//        _precedenceStack.push(0)
-//        val interpreter = interpreter
-//        if (interpreter != null) {
-//            interpreter!!.reset()
-//        }
+        if (inputStream != null) inputStream!!.seek(0)
+        errorHandler.reset(this)
+        context = null
+        numberOfSyntaxErrors = 0
+        isMatchedEOF = false
+        //isTrace = false TODO
+        _precedenceStack.clear()
+        _precedenceStack.push(0)
+        val interpreter = interpreter
+        if (interpreter != null) {
+            interpreter!!.reset()
+        }
     }
 
     /**

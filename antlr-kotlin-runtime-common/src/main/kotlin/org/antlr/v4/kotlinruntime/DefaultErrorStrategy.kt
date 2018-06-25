@@ -10,6 +10,7 @@ import com.strumenta.kotlinmultiplatform.errMessage
 import org.antlr.v4.kotlinruntime.atn.ATNState
 import org.antlr.v4.kotlinruntime.atn.RuleTransition
 import org.antlr.v4.kotlinruntime.misc.IntervalSet
+import org.antlr.v4.kotlinruntime.misc.Pair
 
 /**
  * This is the default implementation of [ANTLRErrorStrategy] used for
@@ -155,7 +156,7 @@ open class DefaultErrorStrategy : ANTLRErrorStrategy {
         //						   ", lastErrorIndex="+
         //						   lastErrorIndex+
         //						   ", states="+lastErrorStates);
-        if (lastErrorIndex == recognizer.readInputStream()!!.index() &&
+        if (lastErrorIndex == recognizer.inputStream!!.index() &&
                 lastErrorStates != null &&
                 lastErrorStates!!.contains(recognizer.state)) {
             // uh oh, another error at same token index and previously-visited
@@ -167,7 +168,7 @@ open class DefaultErrorStrategy : ANTLRErrorStrategy {
             //			System.err.println("FAILSAFE consumes "+recognizer.getTokenNames()[recognizer.getInputStream().LA(1)]);
             recognizer.consume()
         }
-        lastErrorIndex = recognizer.readInputStream()!!.index()
+        lastErrorIndex = recognizer.inputStream!!.index()
         if (lastErrorStates == null) lastErrorStates = IntervalSet()
         lastErrorStates!!.add(recognizer.state)
         val followSet = getErrorRecoverySet(recognizer)
@@ -234,7 +235,7 @@ open class DefaultErrorStrategy : ANTLRErrorStrategy {
             return
         }
 
-        val tokens = recognizer.readInputStream()
+        val tokens = recognizer.inputStream
         val la = tokens!!.LA(1)
 
         // try cheaper subset first; might get lucky. seems to shave a wee bit off
@@ -291,7 +292,7 @@ open class DefaultErrorStrategy : ANTLRErrorStrategy {
      */
     protected fun reportNoViableAlternative(recognizer: Parser,
                                             e: NoViableAltException) {
-        val tokens = recognizer.readInputStream()
+        val tokens = recognizer.inputStream
         val input: String
         if (tokens != null) {
             if (e.startToken!!.type == Token.EOF)
@@ -362,19 +363,18 @@ open class DefaultErrorStrategy : ANTLRErrorStrategy {
      * @param recognizer the parser instance
      */
     protected fun reportUnwantedToken(recognizer: Parser) {
-        TODO()
-//        if (inErrorRecoveryMode(recognizer)) {
-//            return
-//        }
-//
-//        beginErrorCondition(recognizer)
-//
-//        val t = recognizer.currentToken
-//        val tokenName = getTokenErrorDisplay(t)
-//        val expecting = getExpectedTokens(recognizer)
-//        val msg = "extraneous input " + tokenName + " expecting " +
-//                expecting.toString(recognizer.vocabulary)
-//        recognizer.notifyErrorListeners(t, msg, null)
+        if (inErrorRecoveryMode(recognizer)) {
+            return
+        }
+
+        beginErrorCondition(recognizer)
+
+        val t = recognizer.currentToken
+        val tokenName = getTokenErrorDisplay(t)
+        val expecting = getExpectedTokens(recognizer)
+        val msg = "extraneous input " + tokenName + " expecting " +
+                expecting.toString(recognizer.vocabulary)
+        recognizer.notifyErrorListeners(t!!, msg, null)
     }
 
     /**
@@ -397,19 +397,18 @@ open class DefaultErrorStrategy : ANTLRErrorStrategy {
      * @param recognizer the parser instance
      */
     protected fun reportMissingToken(recognizer: Parser) {
-        TODO()
-//        if (inErrorRecoveryMode(recognizer)) {
-//            return
-//        }
-//
-//        beginErrorCondition(recognizer)
-//
-//        val t = recognizer.currentToken
-//        val expecting = getExpectedTokens(recognizer)
-//        val msg = "missing " + expecting.toString(recognizer.vocabulary) +
-//                " at " + getTokenErrorDisplay(t)
-//
-//        recognizer.notifyErrorListeners(t, msg, null)
+        if (inErrorRecoveryMode(recognizer)) {
+            return
+        }
+
+        beginErrorCondition(recognizer)
+
+        val t = recognizer.currentToken
+        val expecting = getExpectedTokens(recognizer)
+        val msg = "missing " + expecting.toString(recognizer.vocabulary) +
+                " at " + getTokenErrorDisplay(t)
+
+        recognizer.notifyErrorListeners(t!!, msg, null)
     }
 
     /**
@@ -516,7 +515,7 @@ open class DefaultErrorStrategy : ANTLRErrorStrategy {
      * strategy for the current mismatched input, otherwise `false`
      */
     protected fun singleTokenInsertion(recognizer: Parser): Boolean {
-        val currentSymbolType = recognizer.readInputStream()!!.LA(1)
+        val currentSymbolType = recognizer.inputStream!!.LA(1)
         // if current token is consistent with what could come after current
         // ATN state, then we know we're missing a token; error recovery
         // is free to conjure up and insert the missing token
@@ -553,22 +552,21 @@ open class DefaultErrorStrategy : ANTLRErrorStrategy {
      * `null`
      */
     protected fun singleTokenDeletion(recognizer: Parser): Token? {
-        val nextTokenType = recognizer.readInputStream()!!.LA(2)
+        val nextTokenType = recognizer.inputStream!!.LA(2)
         val expecting = getExpectedTokens(recognizer)
         if (expecting.contains(nextTokenType)) {
-            TODO()
-//            reportUnwantedToken(recognizer)
-//            /*
-//			System.err.println("recoverFromMismatchedToken deleting "+
-//							   ((TokenStream)recognizer.getInputStream()).LT(1)+
-//							   " since "+((TokenStream)recognizer.getInputStream()).LT(2)+
-//							   " is what we want");
-//			*/
-//            recognizer.consume() // simply delete extra token
-//            // we want to return the token we're actually matching
-//            val matchedSymbol = recognizer.currentToken
-//            reportMatch(recognizer)  // we know current token is correct
-//            return matchedSymbol
+            reportUnwantedToken(recognizer)
+            /*
+			System.err.println("recoverFromMismatchedToken deleting "+
+							   ((TokenStream)recognizer.getInputStream()).LT(1)+
+							   " since "+((TokenStream)recognizer.getInputStream()).LT(2)+
+							   " is what we want");
+			*/
+            recognizer.consume() // simply delete extra token
+            // we want to return the token we're actually matching
+            val matchedSymbol = recognizer.currentToken
+            reportMatch(recognizer)  // we know current token is correct
+            return matchedSymbol
         }
         return null
     }
@@ -593,27 +591,26 @@ open class DefaultErrorStrategy : ANTLRErrorStrategy {
      * override this method to create the appropriate tokens.
      */
     protected fun getMissingSymbol(recognizer: Parser): Token {
-        TODO()
-//        val currentSymbol = recognizer.currentToken
-//        val expecting = getExpectedTokens(recognizer)
-//        var expectedTokenType = Token.INVALID_TYPE
-//        if (!expecting.isNil()) {
-//            expectedTokenType = expecting.getMinElement() // get any element
-//        }
-//        val tokenText: String
-//        if (expectedTokenType == Token.EOF)
-//            tokenText = "<missing EOF>"
-//        else
-//            tokenText = "<missing " + recognizer.vocabulary.getDisplayName(expectedTokenType) + ">"
-//        var current = currentSymbol
-//        val lookback = recognizer.inputStream!!.LT(-1)
-//        if (current.type == Token.EOF && lookback != null) {
-//            current = lookback
-//        }
-//        return recognizer.tokenFactory.create(Pair<TokenSource, CharStream>(current.tokenSource, current.tokenSource.inputStream), expectedTokenType, tokenText,
-//                Token.DEFAULT_CHANNEL,
-//                -1, -1,
-//                current.line, current.charPositionInLine)
+        val currentSymbol = recognizer.currentToken
+        val expecting = getExpectedTokens(recognizer)
+        var expectedTokenType = Token.INVALID_TYPE
+        if (!expecting.isNil) {
+            expectedTokenType = expecting.minElement // get any element
+        }
+        val tokenText: String
+        if (expectedTokenType == Token.EOF)
+            tokenText = "<missing EOF>"
+        else
+            tokenText = "<missing " + recognizer.vocabulary.getDisplayName(expectedTokenType) + ">"
+        var current = currentSymbol
+        val lookback = recognizer.tokenStream!!.LT(-1)
+        if (current?.type == Token.EOF && lookback != null) {
+            current = lookback
+        }
+        return recognizer.tokenFactory.create(Pair(current!!.tokenSource, current.tokenSource!!.charInputStream), expectedTokenType, tokenText,
+                Token.DEFAULT_CHANNEL,
+                -1, -1,
+                current.line, current.charPositionInLine)
     }
 
 
@@ -772,12 +769,12 @@ open class DefaultErrorStrategy : ANTLRErrorStrategy {
     /** Consume tokens until one matches the given token set.  */
     protected fun consumeUntil(recognizer: Parser, set: IntervalSet) {
         //		System.err.println("consumeUntil("+set.toString(recognizer.getTokenNames())+")");
-        var ttype = recognizer.readInputStream()!!.LA(1)
+        var ttype = recognizer.inputStream!!.LA(1)
         while (ttype != Token.EOF && !set.contains(ttype)) {
             //System.out.println("consume during recover LA(1)="+getTokenNames()[input.LA(1)]);
             //			recognizer.getInputStream().consume();
             recognizer.consume()
-            ttype = recognizer.readInputStream()!!.LA(1)
+            ttype = recognizer.inputStream!!.LA(1)
         }
     }
 }
