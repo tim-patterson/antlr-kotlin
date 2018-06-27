@@ -7,7 +7,7 @@
 package org.antlr.v4.kotlinruntime.atn
 
 import com.strumenta.kotlinmultiplatform.Arrays
-import com.strumenta.kotlinmultiplatform.clone
+import com.strumenta.kotlinmultiplatform.arrayEquals
 import org.antlr.v4.kotlinruntime.CharStream
 import org.antlr.v4.kotlinruntime.IntStream
 import org.antlr.v4.kotlinruntime.Lexer
@@ -90,7 +90,7 @@ class LexerActionExecutor
         for (i in lexerActions.indices) {
             if (lexerActions[i].isPositionDependent && lexerActions[i] !is LexerIndexedCustomAction) {
                 if (updatedLexerActions == null) {
-                    updatedLexerActions = lexerActions.clone()
+                    updatedLexerActions = lexerActions.copyOf()
                 }
 
                 updatedLexerActions!![i] = LexerIndexedCustomAction(offset, lexerActions[i])
@@ -160,7 +160,7 @@ class LexerActionExecutor
         }
 
         val other = obj as LexerActionExecutor?
-        return hashCode == other!!.hashCode && Arrays.equals(lexerActions, other.lexerActions)
+        return hashCode == other!!.hashCode && arrayEquals(lexerActions, other.lexerActions)
     }
 
     companion object {

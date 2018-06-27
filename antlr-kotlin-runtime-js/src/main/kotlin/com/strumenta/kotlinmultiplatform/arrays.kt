@@ -20,10 +20,6 @@ actual fun arraycopy(src: IntArray, srcPos: Int, dest: IntArray, destPos: Int, l
     }
 }
 
-actual fun <T> Array<T>.clone(): Array<T> {
-    TODO("Array<T>.clone() not implemented") //To change body of created functions use File | Settings | File Templates.
-}
-
 actual object Arrays {
 
     actual fun <T> asList(vararg elements: T): List<T> {
@@ -33,18 +29,6 @@ actual object Arrays {
     actual fun <T> copyOf(original: Array<T>, size: Int): Array<T> {
         val res = original.copyOf(size)
         return res as Array<T>
-    }
-
-    actual fun equals(a: Array<*>, b: Array<*>) : Boolean {
-        if (a.size != b.size) {
-            return false
-        }
-        for (i in 0..a.size) {
-            if (a[i] != b[i]) {
-                return false
-            }
-        }
-        return true
     }
 
     actual fun toString(a: Array<*>): String {

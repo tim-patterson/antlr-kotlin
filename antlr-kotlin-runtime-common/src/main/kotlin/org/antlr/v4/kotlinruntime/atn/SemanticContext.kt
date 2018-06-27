@@ -8,6 +8,7 @@ package org.antlr.v4.kotlinruntime.atn
 
 import com.strumenta.kotlinmultiplatform.Arrays
 import com.strumenta.kotlinmultiplatform.Collections
+import com.strumenta.kotlinmultiplatform.arrayEquals
 import org.antlr.v4.kotlinruntime.Recognizer
 import org.antlr.v4.kotlinruntime.RuleContext
 import org.antlr.v4.kotlinruntime.misc.MurmurHash
@@ -212,7 +213,7 @@ abstract class SemanticContext {
             if (this === obj) return true
             if (obj !is AND) return false
             val other = obj as AND?
-            return Arrays.equals(this.opnds, other!!.opnds)
+            return arrayEquals(this.opnds, other!!.opnds)
         }
 
         override fun hashCode(): Int {
@@ -307,12 +308,11 @@ abstract class SemanticContext {
             if (this === obj) return true
             if (obj !is OR) return false
             val other = obj as OR?
-            return Arrays.equals(this.opnds, other!!.opnds)
+            return arrayEquals(this.opnds, other!!.opnds)
         }
 
         override fun hashCode(): Int {
-            TODO()
-            //return MurmurHash.hashCode(opnds, OR::class.java!!.hashCode())
+            return MurmurHash.hashCode(opnds, OR::class!!.hashCode())
         }
 
         /**

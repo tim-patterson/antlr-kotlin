@@ -16,20 +16,12 @@ actual fun arraycopy(src: IntArray, srcPos: Int, dest: IntArray, destPos: Int, l
     System.arraycopy(src, srcPos, dest, destPos, length)
 }
 
-actual fun <T> Array<T>.clone(): Array<T> {
-    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-}
-
 actual object Arrays {
     actual fun <T> asList(vararg elements: T): List<T> {
         return java.util.Arrays.asList(*elements)
     }
     actual fun <T> copyOf(original: Array<T>, size: Int): Array<T> {
         return java.util.Arrays.copyOf(original, size)
-    }
-
-    actual fun equals(a: Array<*>, b: Array<*>) : Boolean {
-        return java.util.Arrays.equals(a, b)
     }
 
     actual fun toString(a: Array<*>): String {

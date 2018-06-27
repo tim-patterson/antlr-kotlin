@@ -19,16 +19,28 @@ fun CharArray.convertToString(): String {
 }
 
 expect object Arrays {
-    //    fun <T> equals(a: Array<T>, b: Array<T>): Boolean
-//    fun equals(a: IntArray, b: IntArray): Boolean
     fun <T> asList(vararg elements: T): List<T>
 
     fun <T> copyOf(original: Array<T>, size: Int): Array<T>
 
-    fun equals(a: Array<*>, b: Array<*>): Boolean
-
     fun toString(a: Array<*>): String
     fun toString(a: IntArray): String
+}
+
+fun <T> arrayEquals(a: Array<T>?, b: Array<T>?): Boolean {
+    return when {
+        a == null && b == null -> true
+        a != null && b != null -> a.contentEquals(b)
+        else -> false
+    }
+}
+
+fun arrayEquals(a: IntArray?, b: IntArray?): Boolean {
+    return when {
+        a == null && b == null -> true
+        a != null && b != null -> a.contentEquals(b)
+        else -> false
+    }
 }
 
 expect class BitSet {
@@ -103,8 +115,6 @@ expect fun Char.Companion.toChars(codePoint: Int, resultArray: CharArray, result
 expect fun Char.Companion.charCount(i: Int): Byte
 
 expect fun Char.Companion.maxValue(): Char
-
-expect fun <T> Array<T>.clone(): Array<T>
 
 expect fun <T> arraycopy(src: Array<T>, srcPos: Int, dest: Array<T>, destPos: Int, length: Int)
 expect fun arraycopy(src: IntArray, srcPos: Int, dest: IntArray, destPos: Int, length: Int)
