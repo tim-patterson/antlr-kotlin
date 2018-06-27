@@ -23,7 +23,7 @@ class DFA constructor(
 
     val states: MutableMap<DFAState, DFAState> = HashMap<DFAState, DFAState>()
 
-    @Volatile
+    //@Volatile
     var s0: DFAState? = null
 
     /**
@@ -121,15 +121,14 @@ class DFA constructor(
 
         // synchronization on s0 here is ok. when the DFA is turned into a
         // precedence DFA, s0 will be initialized once and not updated again
-        // TODO
-//        synchronized(s0) {
+        synchronized(s0!!) {
 //            // s0.edges is never null for a precedence DFA
             if (precedence >= s0!!.edges!!.size) {
                 s0!!.edges = s0!!.edges!!.copyOf(precedence + 1)
             }
 
             s0!!.edges!![precedence] = startState
-//        }
+        }
     }
 
     /**
