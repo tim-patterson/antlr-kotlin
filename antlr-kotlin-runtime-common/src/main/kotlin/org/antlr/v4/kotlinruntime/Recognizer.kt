@@ -6,7 +6,6 @@
 
 package org.antlr.v4.kotlinruntime
 
-import com.strumenta.kotlinmultiplatform.Collections
 import com.strumenta.kotlinmultiplatform.NullPointerException
 import com.strumenta.kotlinmultiplatform.WeakHashMap
 import org.antlr.v4.kotlinruntime.atn.ATN
@@ -76,7 +75,7 @@ abstract class Recognizer<Symbol, ATNInterpreter : ATNSimulator> {
             synchronized(tokenTypeMapCache) {
                 var result: MutableMap<String, Int>? = tokenTypeMapCache[vocabulary]
                 if (result == null) {
-                    result = HashMap()
+                    result = mutableMapOf()
                     for (i in 0..atn.maxTokenType) {
                         val literalName = vocabulary.getLiteralName(i)
                         if (literalName != null) {
@@ -90,11 +89,10 @@ abstract class Recognizer<Symbol, ATNInterpreter : ATNSimulator> {
                     }
 
                     result.put("EOF", Token.EOF)
-                    result = Collections.unmodifiableMap(result)
                     tokenTypeMapCache.put(vocabulary, result!!)
                 }
 
-                return result
+                return result.toMap()
             }
         }
 
@@ -111,11 +109,11 @@ abstract class Recognizer<Symbol, ATNInterpreter : ATNSimulator> {
             synchronized(ruleIndexMapCache) {
                 var result: MutableMap<String, Int>? = ruleIndexMapCache[ruleNames]
                 if (result == null) {
-                    result = Collections.unmodifiableMap(Utils.toMap(ruleNames))
-                    ruleIndexMapCache.put(ruleNames, result!!)
+                    result = Utils.toMap(ruleNames).toMutableMap()
+                    ruleIndexMapCache.put(ruleNames, result)
                 }
 
-                return result!!
+                return result.toMap()
             }
         }
 

@@ -7,7 +7,6 @@
 package org.antlr.v4.kotlinruntime.atn
 
 import com.strumenta.kotlinmultiplatform.Arrays
-import com.strumenta.kotlinmultiplatform.Collections
 import com.strumenta.kotlinmultiplatform.arrayEquals
 import org.antlr.v4.kotlinruntime.Recognizer
 import org.antlr.v4.kotlinruntime.RuleContext
@@ -200,11 +199,7 @@ abstract class SemanticContext {
                 operands.add(b)
 
             val precedencePredicates = filterPrecedencePredicates(operands)
-            if (!precedencePredicates.isEmpty()) {
-                // interested in the transition with the lowest precedence
-                val reduced = Collections.min(precedencePredicates)
-                operands.add(reduced)
-            }
+            precedencePredicates.min()?.let { operands.add(it) }
 
             opnds = operands.toTypedArray()
         }
@@ -295,11 +290,7 @@ abstract class SemanticContext {
                 operands.add(b)
 
             val precedencePredicates = filterPrecedencePredicates(operands)
-            if (!precedencePredicates.isEmpty()) {
-                // interested in the transition with the highest precedence
-                val reduced = Collections.max(precedencePredicates)
-                operands.add(reduced)
-            }
+            precedencePredicates.max()?.let { operands.add(it) }
 
             this.opnds = operands.toTypedArray()
         }

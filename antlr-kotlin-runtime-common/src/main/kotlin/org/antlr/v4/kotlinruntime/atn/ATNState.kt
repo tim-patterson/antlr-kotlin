@@ -7,7 +7,6 @@
 package org.antlr.v4.kotlinruntime.atn
 
 import com.strumenta.kotlinmultiplatform.Arrays
-import com.strumenta.kotlinmultiplatform.Collections
 import com.strumenta.kotlinmultiplatform.errMessage
 import org.antlr.v4.kotlinruntime.misc.IntervalSet
 
@@ -182,7 +181,7 @@ abstract class ATNState {
         val PLUS_LOOP_BACK = 11
         val LOOP_END = 12
 
-        val serializationNames = Collections.unmodifiableList(Arrays.asList(
+        val serializationNames = listOf(
                 "INVALID",
                 "BASIC",
                 "RULE_START",
@@ -196,7 +195,7 @@ abstract class ATNState {
                 "STAR_LOOP_ENTRY",
                 "PLUS_LOOP_BACK",
                 "LOOP_END"
-        ))
+        )
 
         val INVALID_STATE_NUMBER = -1
     }

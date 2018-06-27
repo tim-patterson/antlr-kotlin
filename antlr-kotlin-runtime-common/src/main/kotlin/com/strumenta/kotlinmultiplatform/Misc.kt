@@ -54,16 +54,6 @@ expect class BitSet {
     fun or(alts: BitSet)
 }
 
-//expect class ArrayList<T> : List<T>
-
-expect object Collections {
-    fun unmodifiableList(asList: Collection<*>): List<*>
-    fun <T, U> unmodifiableMap(t: T): U
-    fun <T : Comparable<T>> min(precedencePredicates: List<T>): T
-    fun <T : Comparable<T>> max(precedencePredicates: List<T>): T
-
-}
-
 expect object Math {
 
     fun min(a: Int, b: Int): Int
