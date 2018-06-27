@@ -6,7 +6,6 @@
 
 package org.antlr.v4.kotlinruntime.atn
 
-import com.strumenta.kotlinmultiplatform.Arrays
 import com.strumenta.kotlinmultiplatform.NullPointerException
 import org.antlr.v4.kotlinruntime.misc.IntervalSet
 

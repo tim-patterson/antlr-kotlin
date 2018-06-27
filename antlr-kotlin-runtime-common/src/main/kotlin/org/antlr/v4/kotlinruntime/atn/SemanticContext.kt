@@ -212,8 +212,7 @@ abstract class SemanticContext {
         }
 
         override fun hashCode(): Int {
-            TODO()
-            //return MurmurHash.hashCode(opnds, AND::class.java!!.hashCode())
+            return MurmurHash.hashCode(opnds, AND::class.hashCode())
         }
 
         /**
@@ -303,7 +302,7 @@ abstract class SemanticContext {
         }
 
         override fun hashCode(): Int {
-            return MurmurHash.hashCode(opnds, OR::class!!.hashCode())
+            return MurmurHash.hashCode(opnds, OR::class.hashCode())
         }
 
         /**
@@ -406,7 +405,7 @@ abstract class SemanticContext {
             }
 
             return if (result == null) {
-                emptyList<PrecedencePredicate>()
+                emptyList()
             } else result
 
         }
