@@ -447,7 +447,7 @@ enterOuterAlt(_localctx, <currentOuterMostAltCodeBlock.alt.altNum>)
 >>
 
 CodeBlockForAlt(currentAltCodeBlock, locals, preamble, ops) ::= <<
-if (true){
+if (true) {
 <locals; separator="\n">
 <preamble; separator="\n">
 <ops; separator="\n">
@@ -469,9 +469,8 @@ LL1OptionalBlock(choice, alts, error) ::= <<
 this.state = <choice.stateNumber>
 errorHandler.sync(this)
 when (_input!!.LA(1)) {
-<choice.altLook,alts:{look,alt| <cases(ttypes=look)>
-	<alt>}; separator="\n">
-else -> ;
+<choice.altLook,alts:{look,alt|  <if(alt)><cases(ttypes=look)>
+	<alt><endif>}; separator="\n">
 }
 >>
 
