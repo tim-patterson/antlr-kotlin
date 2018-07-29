@@ -761,7 +761,7 @@ class ATNDeserializer constructor(deserializationOptions: ATNDeserializationOpti
         }
     }
 
-    fun deserializeIntegers(serializedIntegersATN: Array<Int>): ATN {
+    fun deserializeIntegers(serializedIntegersATN: IntArray): ATN {
         val chars = serializedIntegersATN.map { it.toChar() }.toCharArray()
         return deserialize(chars)
     }

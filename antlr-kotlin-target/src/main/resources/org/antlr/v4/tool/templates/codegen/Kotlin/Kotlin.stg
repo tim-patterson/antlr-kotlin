@@ -931,7 +931,7 @@ public static final String _serializedATN = Utils.join(
 <else>
 <! only one segment, can be inlined !>
 private val serializedIntegersATN =
-	arrayOf(<model.serialized:{it | <it>}; wrap={<\n><\t>}, separator=", ">)
+	intArrayOf(<model.serialized:{it | <it>}; wrap={<\n><\t>}, separator=", ">)
 <endif>
 val ATN = ATNDeserializer().deserializeIntegers(serializedIntegersATN)
 init {
@@ -961,7 +961,7 @@ public static final String _serializedATN = Utils.join(
 <else>
 <! only one segment, can be inlined !>
 val serializedIntegersATN =
-	arrayOf(<model.serializedIntegers; wrap={<\n><\t>}, separator=",">)
+	intArrayOf(<model.serializedIntegers; wrap={<\n><\t>}, separator=",">)
 <endif>
 val ATN = ATNDeserializer().deserializeIntegers(serializedIntegersATN)
 init {
