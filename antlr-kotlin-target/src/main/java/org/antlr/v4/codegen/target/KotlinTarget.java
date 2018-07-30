@@ -37,21 +37,7 @@ public class KotlinTarget extends Target {
 
 	public KotlinTarget(CodeGenerator gen) {
 		super(gen, "Kotlin");
-		targetCharValueEscape = new String[255];
-		targetCharValueEscape['\n'] = "\\n";
-		targetCharValueEscape['\r'] = "\\r";
-		targetCharValueEscape['\t'] = "\\t";
-		targetCharValueEscape['\b'] = "\\b";
-		//targetCharValueEscape['\f'] = "\\u000c";
-		targetCharValueEscape['\\'] = "\\\\";
-		targetCharValueEscape['\''] = "\\'";
-		targetCharValueEscape[10] = "\\u000a";
-		targetCharValueEscape[11] = "\\u000b";
-		targetCharValueEscape[12] = "\\u000c";
-		targetCharValueEscape[13] = "\\u000d";
-		targetCharValueEscape[14] = "\\u000e";
-		targetCharValueEscape[15] = "\\u000f";
-		targetCharValueEscape['"'] = "\\\"";
+		targetCharValueEscape['\f'] = null;
 		targetCharValueEscape['$'] = "\\$";
 	}
 
@@ -76,9 +62,8 @@ public class KotlinTarget extends Target {
 
 	@Override
 	public int getSerializedATNSegmentLimit() {
-		// 65535 is the class file format byte limit for a UTF-8 encoded string literal
-		// 3 is the maximum number of bytes it takes to encode a value in the range 0-0xFFFF
-		return 65535 / 3;
+		// The kotlin compiler seems to like to stack overflow on big string literals full of escapes
+		return 5000;
 	}
 
 	@Override
@@ -100,7 +85,20 @@ public class KotlinTarget extends Target {
 
 	@Override
 	public String encodeIntAsCharEscape(int v) {
-		return Integer.toString(v);
+		if (v < Character.MIN_VALUE || v > Character.MAX_VALUE) {
+			throw new IllegalArgumentException(String.format("Cannot encode the specified value: %d", v));
+		}
+
+		if (v >= 0 && v < targetCharValueEscape.length && targetCharValueEscape[v] != null) {
+			return targetCharValueEscape[v];
+		}
+
+		if (v >= 0x20 && v < 127 && (!Character.isDigit(v) || v == '8' || v == '9')) {
+			return String.valueOf((char)v);
+		}
+
+		String hex = Integer.toHexString(v|0x10000).substring(1,5);
+		return "\\u"+hex;
 	}
 
 	@Override

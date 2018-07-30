@@ -142,7 +142,7 @@ class MiniCalcParser(input: TokenStream) : Parser(input) {
             el
         }
 
-        private val serializedIntegersATN =
+		 private val serializedIntegersATN =
         	intArrayOf(3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884,
         	3, 31, 99, 4, 2, 9, 2, 4, 3, 9, 3, 4, 4, 9, 4, 4, 5, 9, 5, 4, 6, 
         	9, 6, 4, 7, 9, 7, 4, 8, 9, 8, 4, 9, 9, 9, 4, 10, 9, 10, 4, 11, 
