@@ -251,7 +251,7 @@ open class IntegerList {
         if (capacity < 0 || capacity > MAX_ARRAY_SIZE) {
             throw RuntimeException()
         }
-        
+
         var newLength = if (_data.isEmpty()) {
             INITIAL_SIZE
         } else {

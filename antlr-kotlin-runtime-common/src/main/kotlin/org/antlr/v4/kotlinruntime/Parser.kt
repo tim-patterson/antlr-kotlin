@@ -33,7 +33,7 @@ abstract class Parser(protected var _input: TokenStream?) : Recognizer<Token, Pa
         get() = _input
         set(value) { _input = value as TokenStream? }
     //
-    protected val _precedenceStack: IntegerStack = IntegerStack()
+    protected val _precedenceStack: IntegerStack = IntegerStack().apply { push(0) }
     //
 //    /**
 //     * The [ParserRuleContext] object for the currently executing rule.
@@ -310,11 +310,6 @@ abstract class Parser(protected var _input: TokenStream?) : Recognizer<Token, Pa
 //        }
 //    }
 //
-//    init {
-//        _precedenceStack = IntegerStack()
-//        _precedenceStack.push(0)
-//    }
-//
 //
     /** reset the parser's state  */
     open fun reset() {
@@ -328,7 +323,7 @@ abstract class Parser(protected var _input: TokenStream?) : Recognizer<Token, Pa
         _precedenceStack.push(0)
         val interpreter = interpreter
         if (interpreter != null) {
-            interpreter!!.reset()
+            interpreter.reset()
         }
     }
 
@@ -684,11 +679,11 @@ abstract class Parser(protected var _input: TokenStream?) : Recognizer<Token, Pa
     fun pushNewRecursionContext(localctx: ParserRuleContext, state: Int, ruleIndex: Int) {
         val previous = context
         previous!!.assignParent(localctx)
-        previous!!.invokingState = state
-        previous!!.stop = _input!!.LT(-1)
+        previous.invokingState = state
+        previous.stop = _input!!.LT(-1)
 
         context = localctx
-        context!!.start = previous!!.start
+        context!!.start = previous.start
         if (buildParseTree) {
             context!!.addChild(previous)
         }
@@ -727,9 +722,9 @@ abstract class Parser(protected var _input: TokenStream?) : Recognizer<Token, Pa
 //        return null
 //    }
 //
-//    override fun precpred(localctx: RuleContext, precedence: Int): Boolean {
-//        return precedence >= _precedenceStack.peek()
-//    }
+    override fun precpred(localctx: RuleContext, precedence: Int): Boolean {
+        return precedence >= _precedenceStack.peek()
+    }
 //
 //    fun inContext(context: String): Boolean {
 //        // TODO: useful in parser?
