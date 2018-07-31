@@ -14,7 +14,7 @@ import com.strumenta.kotlinmultiplatform.*
 open class IntegerList {
 
 
-    private var _data: IntArray? = null
+    private var _data: IntArray = EMPTY_DATA
 
     private var _size: Int = 0
 
@@ -38,7 +38,7 @@ open class IntegerList {
     }
 
     constructor(list: IntegerList) {
-        _data = list._data!!.copyOf()
+        _data = list._data.copyOf()
         _size = list._size
     }
 
@@ -49,30 +49,30 @@ open class IntegerList {
     }
 
     fun add(value: Int) {
-        if (_data!!.size == _size) {
+        if (_data.size == _size) {
             ensureCapacity(_size + 1)
         }
-        _data!![_size] = value
+        _data[_size] = value
         _size++
     }
 
     fun addAll(array: IntArray) {
         ensureCapacity(_size + array.size)
         Arrays
-        arraycopy(array, 0, _data!!, _size, array.size)
+        arraycopy(array, 0, _data, _size, array.size)
         _size += array.size
     }
 
     fun addAll(list: IntegerList) {
         ensureCapacity(_size + list._size)
-        arraycopy(list._data!!, 0, _data!!, _size, list._size)
+        arraycopy(list._data, 0, _data, _size, list._size)
         _size += list._size
     }
 
     fun addAll(list: Collection<Int>) {
         ensureCapacity(_size + list.size)
         list.forEachIndexed { index, x ->
-            _data!![_size + index] = x
+            _data[_size + index] = x
         }
         _size += list.size
     }
@@ -82,12 +82,12 @@ open class IntegerList {
             throw IndexOutOfBoundsException()
         }
 
-        return _data!![index]
+        return _data[index]
     }
 
     operator fun contains(value: Int): Boolean {
         for (i in 0 until _size) {
-            if (_data!![i] == value) {
+            if (_data[i] == value) {
                 return true
             }
         }
@@ -100,15 +100,15 @@ open class IntegerList {
             throw IndexOutOfBoundsException()
         }
 
-        val previous = _data!![index]
-        _data!![index] = value
+        val previous = _data[index]
+        _data[index] = value
         return previous
     }
 
     fun removeAt(index: Int): Int {
         val value = get(index)
-        arraycopy(_data!!, index + 1, _data!!, index, _size - index - 1)
-        _data!![_size - 1] = 0
+        arraycopy(_data, index + 1, _data, index, _size - index - 1)
+        _data[_size - 1] = 0
         _size--
         return value
     }
@@ -121,7 +121,7 @@ open class IntegerList {
             throw IllegalArgumentException()
         }
 
-        arraycopy(_data!!, toIndex, _data!!, fromIndex, _size - toIndex)
+        arraycopy(_data, toIndex, _data, fromIndex, _size - toIndex)
         //Arrays.fill(_data!!, _size - (toIndex - fromIndex), _size, 0)
         _size -= toIndex - fromIndex
     }
@@ -131,10 +131,10 @@ open class IntegerList {
     }
 
     fun trimToSize() {
-        if (_data!!.size == _size) {
+        if (_data.size == _size) {
             return
         }
-        _data = _data!!.copyOf(_size)
+        _data = _data.copyOf(_size)
     }
 
     fun clear() {
@@ -146,13 +146,13 @@ open class IntegerList {
         return if (_size == 0) {
             EMPTY_DATA
         } else {
-            _data!!.copyOf()
+            _data.copyOf()
         }
 
     }
 
     fun sort() {
-        _data!!.sort()
+        _data.sort()
     }
 
     /**
@@ -189,7 +189,7 @@ open class IntegerList {
         }
 
         for (i in 0 until _size) {
-            if (_data!![i] != other._data!![i]) {
+            if (_data[i] != other._data[i]) {
                 return false
             }
         }
@@ -210,7 +210,7 @@ open class IntegerList {
     override fun hashCode(): Int {
         var hashCode = 1
         for (i in 0 until _size) {
-            hashCode = 31 * hashCode + _data!![i]
+            hashCode = 31 * hashCode + _data[i]
         }
 
         return hashCode
@@ -224,7 +224,7 @@ open class IntegerList {
     }
 
     fun binarySearch(key: Int): Int {
-        return _data!!.indexOf(key)
+        return _data.indexOf(key)
         // TODO
         //return Arrays.binarySearch(_data!!, 0, _size, key)
     }
@@ -238,7 +238,7 @@ open class IntegerList {
         }
 
         // TODO
-        val i = _data!!.sliceArray(fromIndex..(toIndex - 1)).indexOf(key)
+        val i = _data.sliceArray(fromIndex..(toIndex - 1)).indexOf(key)
         return if (i == -1) {
             -1
         } else {
@@ -251,22 +251,21 @@ open class IntegerList {
         if (capacity < 0 || capacity > MAX_ARRAY_SIZE) {
             throw RuntimeException()
         }
-
-        var newLength: Int
-        if (_data!!.size == 0) {
-            newLength = INITIAL_SIZE
+        
+        var newLength = if (_data.isEmpty()) {
+            INITIAL_SIZE
         } else {
-            newLength = _data!!.size
+            _data.size
         }
 
         while (newLength < capacity) {
-            newLength = newLength * 2
+            newLength *= 2
             if (newLength < 0 || newLength > MAX_ARRAY_SIZE) {
                 newLength = MAX_ARRAY_SIZE
             }
         }
 
-        _data = Arrays.copyOf(_data!!.toTypedArray(), newLength).toIntArray()
+        _data =_data.copyOf(newLength)
     }
 
     /** Convert the list to a UTF-16 encoded char array. If all values are less
@@ -281,7 +280,7 @@ open class IntegerList {
         var resultIdx = 0
         var calculatedPreciseResultSize = false
         for (i in 0 until _size) {
-            val codePoint = _data!![i]
+            val codePoint = _data[i]
             // Calculate the precise result size if we encounter
             // a code point > 0xFFFF
             if (!calculatedPreciseResultSize && Char.isSupplementaryCodePoint(codePoint)) {
@@ -299,14 +298,14 @@ open class IntegerList {
     private fun charArraySize(): Int {
         var result = 0
         for (i in 0 until _size) {
-            result += Char.charCount(_data!![i])
+            result += Char.charCount(_data[i])
         }
         return result
     }
 
     companion object {
 
-        private val EMPTY_DATA = IntArray(0)
+        private val EMPTY_DATA = intArrayOf()
 
         private val INITIAL_SIZE = 4
         private val MAX_ARRAY_SIZE = Int.MAX_VALUE - 8
