@@ -2,34 +2,32 @@ package com.strumenta.kotlinmultiplatform
 
 actual class BitSet {
 
-    private val setBits = HashSet<Int>()
-
-    actual constructor()
+    private var setBits = BooleanArray(80)
 
     actual fun set(bitIndex: Int) {
-        if (bitIndex < 0) throw IllegalArgumentException()
-        setBits.add(bitIndex)
+        while (bitIndex >= setBits.size) setBits = setBits.copyOf(setBits.size * 2)
+        setBits[bitIndex] = true
     }
     actual fun clear(bitIndex: Int) {
-        if (bitIndex < 0) throw IllegalArgumentException()
-        setBits.remove(bitIndex)
+        setBits[bitIndex] = false
     }
     actual fun get(bitIndex: Int): Boolean {
-        if (bitIndex < 0) throw IllegalArgumentException()
-        return setBits.contains(bitIndex)
+        if (bitIndex >= setBits.size) return false
+        return setBits[bitIndex]
     }
 
     actual fun cardinality(): Int {
-        return setBits.size
+        return setBits.count { it }
     }
 
     actual fun nextSetBit(i: Int): Int {
-        val nextSetBits = setBits.filter { it >= i }
-        return nextSetBits.min() ?: -1
+        return setBits.drop(i).indexOfFirst { it }
     }
 
     actual fun or(alts: BitSet) {
-        this.setBits.addAll(alts.setBits)
+        alts.setBits.forEachIndexed { i, v ->
+            if (v) setBits[i] = true
+        }
     }
 
 }
