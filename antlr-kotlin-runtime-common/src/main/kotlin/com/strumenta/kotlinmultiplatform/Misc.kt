@@ -102,15 +102,3 @@ expect fun Char.Companion.maxValue(): Char
 
 expect fun <T> arraycopy(src: Array<T>, srcPos: Int, dest: Array<T>, destPos: Int, length: Int)
 expect fun arraycopy(src: IntArray, srcPos: Int, dest: IntArray, destPos: Int, length: Int)
-
-expect class Type
-
-expect fun Type.isInstance(any: Any?): Boolean
-
-interface TypeDeclarator {
-    val classesByName: List<KClass<*>>
-}
-
-expect fun TypeDeclarator.getType(name: String): Type
-
-//expect fun toInt32(c: Char) : Int

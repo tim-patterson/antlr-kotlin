@@ -96,10 +96,8 @@ import kotlin.reflect.KClass
  */
 class TokenStreamRewriter(
         /** Our source stream  */
-        val tokenStream: TokenStream) : TypeDeclarator {
+        val tokenStream: TokenStream) {
 
-    override val classesByName: List<KClass<*>>
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
     /** You may have multiple, named streams of rewrite operations.
      * I'm calling these things "programs."
      * Maps String (name)  rewrite (List)
@@ -451,7 +449,7 @@ class TokenStreamRewriter(
             val op = (rewrites[i] ?: continue) as? ReplaceOp ?: continue
             val rop = rewrites[i] as ReplaceOp
             // Wipe prior inserts within range
-            val inserts = getKindOfOps<InsertBeforeOp>(rewrites, this.getType("InsertBeforeOp"), i)
+            val inserts = getKindOfOps<InsertBeforeOp>(rewrites, InsertBeforeOp::class, i)
             for (iop in inserts) {
                 if (iop.index == rop.index) {
                     // E.g., insert before 2, delete 2..2; update replace
@@ -464,7 +462,7 @@ class TokenStreamRewriter(
                 }
             }
             // Drop any prior replaces contained within
-            val prevReplaces = getKindOfOps<ReplaceOp>(rewrites, this.getType("ReplaceOp"), i)
+            val prevReplaces = getKindOfOps<ReplaceOp>(rewrites, ReplaceOp::class, i)
             for (prevRop in prevReplaces) {
                 if (prevRop.index >= rop.index && prevRop.lastIndex <= rop.lastIndex) {
                     // delete replace as it's a no-op.
@@ -492,7 +490,7 @@ class TokenStreamRewriter(
             val op = (rewrites[i] ?: continue) as? InsertBeforeOp ?: continue
             val iop = rewrites[i] as InsertBeforeOp
             // combine current insert with prior if any at same index
-            val prevInserts = getKindOfOps<InsertBeforeOp>(rewrites, this.getType("InsertBeforeOp"), i)
+            val prevInserts = getKindOfOps<InsertBeforeOp>(rewrites, InsertBeforeOp::class, i)
             for (prevIop in prevInserts) {
                 if (prevIop.index == iop.index) {
                     if (prevIop is InsertAfterOp) {
@@ -508,7 +506,7 @@ class TokenStreamRewriter(
                 }
             }
             // look for replaces where iop.index is in range; error
-            val prevReplaces = getKindOfOps<ReplaceOp>(rewrites, this.getType("ReplaceOp"), i)
+            val prevReplaces = getKindOfOps<ReplaceOp>(rewrites, ReplaceOp::class, i)
             for (rop in prevReplaces) {
                 if (iop.index == rop.index) {
                     rop.text = catOpText(iop.text, rop.text)
@@ -543,7 +541,7 @@ class TokenStreamRewriter(
     }
 
     /** Get all operations before an index of a particular kind  */
-    protected fun <T : TokenStreamRewriter.RewriteOperation> getKindOfOps(rewrites: List<RewriteOperation?>, kind: Type, before: Int): List<T> {
+    protected fun <T : TokenStreamRewriter.RewriteOperation> getKindOfOps(rewrites: List<RewriteOperation?>, kind: KClass<*>, before: Int): List<T> {
         val ops = ArrayList<T>()
         var i = 0
         while (i < before && i < rewrites.size) {

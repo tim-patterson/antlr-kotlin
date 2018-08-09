@@ -5,14 +5,11 @@
  */
 package org.antlr.v4.kotlinruntime
 
-import com.strumenta.kotlinmultiplatform.Type
-import com.strumenta.kotlinmultiplatform.TypeDeclarator
-import com.strumenta.kotlinmultiplatform.isInstance
 import org.antlr.v4.kotlinruntime.ast.Position
-import org.antlr.v4.kotlinruntime.ast.pos
 import org.antlr.v4.kotlinruntime.tree.ParseTree
 import org.antlr.v4.kotlinruntime.misc.Interval
 import org.antlr.v4.kotlinruntime.tree.*
+import kotlin.reflect.KClass
 
 //
 ///** A rule invocation record for parsing.
@@ -240,7 +237,7 @@ open class ParserRuleContext : RuleContext {
         return if (children != null && i >= 0 && i < children!!.size) children!![i] else null
     }
 
-    fun <T : ParseTree> getChild(ctxType: Type, i: Int): T? {
+    inline fun <reified T : ParseTree> getChild(ctxType: KClass<T>, i: Int): T? {
         if (children == null || i < 0 || i >= children!!.size) {
             return null
         }
@@ -304,30 +301,12 @@ open class ParserRuleContext : RuleContext {
 
     }
 
-    fun <T : ParserRuleContext> getRuleContext(ctxType: Type, i: Int): T? {
-        return getChild(ctxType, i) as T?
+    inline fun <reified T : ParserRuleContext> getRuleContext(ctxType: KClass<T>, i: Int): T? {
+        return getChild(ctxType, i)
     }
 
-    fun <T : ParserRuleContext> getRuleContexts(ctxType: Type): List<T> {
-        if (children == null) {
-            return emptyList()
-        }
-
-        var contexts: MutableList<T>? = null
-        for (o in children!!) {
-            if (ctxType.isInstance(o)) {
-                if (contexts == null) {
-                    contexts = ArrayList()
-                }
-
-                contexts.add(o as T)
-            }
-        }
-
-        return if (contexts == null) {
-            emptyList()
-        } else contexts
-
+    inline fun <reified T : ParserRuleContext> getRuleContexts(ctxType: KClass<T>): List<T> {
+        return children.orEmpty().filterIsInstance<T>()
     }
 //
 //    /** Used for rule context info debugging during parse-time, not so much for ATN debugging  */

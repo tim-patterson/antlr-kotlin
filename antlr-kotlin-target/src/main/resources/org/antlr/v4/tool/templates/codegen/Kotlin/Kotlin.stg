@@ -51,8 +51,6 @@ package <file.genPackage>;
 <namedActions.header>
 import com.strumenta.kotlinmultiplatform.Arrays
 import com.strumenta.kotlinmultiplatform.toCharArray
-import com.strumenta.kotlinmultiplatform.getType
-import com.strumenta.kotlinmultiplatform.TypeDeclarator
 import org.antlr.v4.kotlinruntime.*
 import org.antlr.v4.kotlinruntime.atn.*
 import org.antlr.v4.kotlinruntime.atn.ATNDeserializer
@@ -231,10 +229,6 @@ Parser(parser, funcs, atn, sempredFuncs, superClass) ::= <<
 >>
 
 Parser_(parser, funcs, atn, sempredFuncs, ctor, superClass) ::= <<
-
-object solver : TypeDeclarator {
-	override val classesByName : List\<KClass\<*>\> = listOf(<parser.funcs:{f | <parser.name>.<f.name; format="cap">Context::class}; separator=",\n", wrap, anchor>)
-}
 
 class <parser.name>(input: TokenStream) : <superClass; null="Parser">(input) {
 	// TODO verify version of runtime is compatible
@@ -710,13 +704,13 @@ ContextTokenListIndexedGetterDecl(t)  ::= <<
 fun <t.name>(i: Int) : TerminalNode = getToken(<parser.name>.Tokens.<t.name>.id, i) as TerminalNode
 >>
 ContextRuleGetterDecl(r)       ::= <<
-fun find<r.name; format="cap">() : <r.ctxName>? = getRuleContext(solver.getType("<r.ctxName>"),0)
+fun find<r.name; format="cap">() : <r.ctxName>? = getRuleContext(<r.ctxName>::class,0)
 >>
 ContextRuleListGetterDecl(r)   ::= <<
-fun find<r.name; format="cap">() : List\<<r.ctxName>\> = getRuleContexts(solver.getType("<r.ctxName>"))
+fun find<r.name; format="cap">() : List\<<r.ctxName>\> = getRuleContexts(<r.ctxName>::class)
 >>
 ContextRuleListIndexedGetterDecl(r)   ::= <<
-fun find<r.name; format="cap">(i: Int) : <r.ctxName>? = getRuleContext(solver.getType("<r.ctxName>"),i)
+fun find<r.name; format="cap">(i: Int) : <r.ctxName>? = getRuleContext(<r.ctxName>::class,i)
 >>
 
 LexerRuleContext() ::= "RuleContext"
