@@ -12,12 +12,6 @@ expect class RuntimeException(message: String) : Throwable
 
 expect fun assert(condition: Boolean)
 
-fun CharArray.convertToString(): String {
-    var s = ""
-    this.forEach { s += it }
-    return s
-}
-
 expect object Arrays {
     fun <T> asList(vararg elements: T): List<T>
 

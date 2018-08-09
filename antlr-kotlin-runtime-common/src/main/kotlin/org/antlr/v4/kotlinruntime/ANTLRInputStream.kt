@@ -186,7 +186,7 @@ open class ANTLRInputStream : CharStream {
         var stop = interval.b
         if (stop >= n) stop = n - 1
         val count = stop - start + 1
-        return if (start >= n) "" else data!!.copyOfRange(start, start+count).convertToString()
+        return if (start >= n) "" else String(data!!, start, count)
         //		System.err.println("data: "+Arrays.toString(data)+", n="+n+
         //						   ", start="+start+
         //						   ", stop="+stop);
